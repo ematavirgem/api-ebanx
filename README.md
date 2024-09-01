@@ -16,6 +16,7 @@ Este projeto é uma API simples desenvolvida em PHP puro. Abaixo você encontrar
    ```bash
    git clone https://github.com/ematavirgem/api-ebanx
    cd api-ebanx
+    ```
 
 ## Testes
 
@@ -25,7 +26,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
 
 1. **Redefinir Estado Antes dos Testes**
 
-    Antes de iniciar os testes, o estado do sistema deve ser limpo para garantir resultados consistentes. Isso pode incluir a criação e exclusão de contas fictícias.
+Antes de iniciar os testes, o estado do sistema deve ser limpo para garantir resultados consistentes. Isso pode incluir a criação e exclusão de contas fictícias.
 
 2. **Obter Saldo para Conta Inexistente**
 
@@ -44,6 +45,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "account_id": "1",
         "amount": 100.0
     }
+    ```
 - Resposta Esperada: {"balance": 100}
 
 4. **Depositar em Conta Existente**
@@ -57,6 +59,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "account_id": "1",
         "amount": 50.0
     }
+    ```
 - Resposta Esperada: {"balance": 150}
 
 5. **Obter Saldo para Conta Existente**
@@ -76,6 +79,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "account_id": "1",
         "amount": 50.0
     }
+    ```
 - Resposta Esperada: {"error": "Account not found"}
 
 7. **Sacar de Conta Existente**
@@ -89,6 +93,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "account_id": "1",
         "amount": 50.0
     }
+    ```
 - Resposta Esperada: {"balance": 100}
 
 8. **Transferir de Conta Existente**
@@ -103,12 +108,14 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "destination_id": "2",
         "amount": 25.0
     }
+    ```
 - Resposta Esperada:
     ```bash
     {
         "source_balance": 75,
         "destination_balance": 25
     }
+    ```
 
 9. **Transferência de Conta Inexistente**
 
@@ -122,6 +129,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
         "destination_id": "2",
         "amount": 25.0
     }
+    ```
 - Resposta Esperada: {"error": "Account not found"}
 
 
