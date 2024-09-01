@@ -26,7 +26,7 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
 
 1. **Redefinir Estado Antes dos Testes**
 
-Antes de iniciar os testes, o estado do sistema deve ser limpo para garantir resultados consistentes. Isso pode incluir a criação e exclusão de contas fictícias.
+    Antes de iniciar os testes, o estado do sistema deve ser limpo para garantir resultados consistentes. Isso pode incluir a criação e exclusão de contas fictícias.
 
 2. **Obter Saldo para Conta Inexistente**
 
