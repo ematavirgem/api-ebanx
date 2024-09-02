@@ -24,15 +24,15 @@ Os testes unitários estão localizados no diretório tests/. Para garantir que 
 
 **Regras de Teste**
 
-1. **Redefinir Estado Antes dos Testes**
+1. **Redefinir estado antes dos testes**
 
     Antes de iniciar os testes, o estado do sistema deve ser limpo para garantir resultados consistentes. Isso pode incluir a criação e exclusão de contas fictícias.
 
-2. **Obter Saldo para Conta Inexistente**
+2. **Obter saldo para conta inexistente**
 
 - Objetivo: Verificar que a API retorna um erro quando tentamos obter o saldo de uma conta que não existe.
-- Código de Status Esperado: 404 Not Found
-- Resposta Esperada: {"error": "Account not found"}
+- Código de status esperado: 404 Not Found
+- Resposta e sperada: {"error": "Account not found"}
 
 3. **Criar uma Conta com Saldo Inicial**
 
