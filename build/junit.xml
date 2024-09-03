@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="6" assertions="22" errors="0" warnings="0" failures="3" skipped="0" time="0.005783">
+    <testsuite name="Squalo API Test Suite" tests="6" assertions="22" errors="0" warnings="0" failures="3" skipped="0" time="0.005783">
+      <testsuite name="Tests\ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" tests="6" assertions="22" errors="0" warnings="0" failures="3" skipped="0" time="0.005783">
+        <testcase name="testDepositCreatesAccount" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="18" assertions="5" time="0.003577"/>
+        <testcase name="testWithdrawFromExistingAccount" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="33" assertions="5" time="0.000519"/>
+        <testcase name="testWithdrawFromNonExistentAccount" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="54" assertions="2" time="0.000591">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\ApiTest::testWithdrawFromNonExistentAccount
+Failed asserting that '0' is of type "array".
+
+D:\webdocs\api-ebanx\tests\ApiTest.php:63</failure>
+        </testcase>
+        <testcase name="testTransferBetweenAccounts" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="68" assertions="6" time="0.000573"/>
+        <testcase name="testGetBalance" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="91" assertions="2" time="0.000346">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\ApiTest::testGetBalance
+Failed asserting that 500 is of type "array".
+
+D:\webdocs\api-ebanx\tests\ApiTest.php:102</failure>
+        </testcase>
+        <testcase name="testGetBalanceForNonExistentAccount" class="Tests\ApiTest" classname="Tests.ApiTest" file="D:\webdocs\api-ebanx\tests\ApiTest.php" line="107" assertions="2" time="0.000177">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\ApiTest::testGetBalanceForNonExistentAccount
+Failed asserting that 0 is of type "array".
+
+D:\webdocs\api-ebanx\tests\ApiTest.php:112</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

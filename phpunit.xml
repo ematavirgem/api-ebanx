@@ -1,15 +1,28 @@
-<phpunit bootstrap="vendor/autoload.php" colors="true">
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php"
+         colors="true"
+         stopOnFailure="false">
+         
     <testsuites>
-        <testsuite name="API Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Squalo API Test Suite">
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
 
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+
     <coverage>
         <include>
-            <directory suffix=".php">controllers</directory>
-            <directory suffix=".php">models</directory>
-            <directory suffix=".php">database</directory>
+            <directory>./src</directory>
         </include>
     </coverage>
+
+    <logging>
+        <log type="coverage-html" target="build/coverage" />
+        <log type="junit" target="build/junit.xml" />
+    </logging>
 </phpunit>

@@ -1,44 +1,117 @@
 <?php
 
+namespace Tests;
+
 use PHPUnit\Framework\TestCase;
-use App\Services\AccountService;
+use App\Controllers\EventController;
 
 class ApiTest extends TestCase
 {
-    private $service;
+    protected $controller;
 
     protected function setUp(): void
     {
-        $this->service = new AccountService();
-        $this->service->reset();
+        $this->controller = new EventController();
+        $this->controller->reset();
     }
 
-    public function testCreateAccount()
+    public function testDepositCreatesAccount()
     {
-        $this->service->createAccount(1000, 500);
-        $this->assertEquals(500, $this->service->getBalance(1000));
+        [$status, $response] = $this->controller->event([
+            'type' => 'deposit',
+            'destination' => '1000',
+            'amount' => 500
+        ]);
+
+        $this->assertEquals(201, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('destination', $response);
+        $this->assertEquals('1000', $response['destination']['id']);
+        $this->assertEquals(500, $response['destination']['balance']);
     }
 
-    public function testDeposit()
+    public function testWithdrawFromExistingAccount()
     {
-        $this->service->createAccount(1000);
-        $this->service->deposit(1000, 200);
-        $this->assertEquals(200, $this->service->getBalance(1000));
+        $this->controller->event([
+            'type' => 'deposit',
+            'destination' => '1000',
+            'amount' => 500
+        ]);
+
+        [$status, $response] = $this->controller->event([
+            'type' => 'withdraw',
+            'origin' => '1000',
+            'amount' => 200
+        ]);
+
+        $this->assertEquals(201, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('origin', $response);
+        $this->assertEquals('1000', $response['origin']['id']);
+        $this->assertEquals(300, $response['origin']['balance']);
     }
 
-    public function testWithdraw()
+    public function testWithdrawFromNonExistentAccount()
     {
-        $this->service->createAccount(1000, 500);
-        $this->service->withdraw(1000, 200);
-        $this->assertEquals(300, $this->service->getBalance(1000));
+        [$status, $response] = $this->controller->event([
+            'type' => 'withdraw',
+            'origin' => '9999',
+            'amount' => 200
+        ]);
+
+        $this->assertEquals(404, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('error', $response);
+        $this->assertEquals('Account not found', $response['error']);
     }
 
-    public function testTransfer()
+    public function testTransferBetweenAccounts()
     {
-        $this->service->createAccount(1000, 500);
-        $this->service->createAccount(1001, 300);
-        $this->service->transfer(1000, 1001, 200);
-        $this->assertEquals(300, $this->service->getBalance(1000));
-        $this->assertEquals(500, $this->service->getBalance(1001));
+        $this->controller->event([
+            'type' => 'deposit',
+            'destination' => '1000',
+            'amount' => 500
+        ]);
+
+        [$status, $response] = $this->controller->event([
+            'type' => 'transfer',
+            'origin' => '1000',
+            'destination' => '2000',
+            'amount' => 300
+        ]);
+
+        $this->assertEquals(201, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('origin', $response);
+        $this->assertArrayHasKey('destination', $response);
+        $this->assertEquals(200, $response['origin']['balance']);
+        $this->assertEquals(300, $response['destination']['balance']);
     }
+
+    public function testGetBalance()
+    {
+        $this->controller->event([
+            'type' => 'deposit',
+            'destination' => '1000',
+            'amount' => 500
+        ]);
+
+        [$status, $response] = $this->controller->balance('1000');
+
+        $this->assertEquals(200, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('balance', $response);
+        $this->assertEquals(500, $response['balance']);
+    }
+
+    public function testGetBalanceForNonExistentAccount()
+    {
+        [$status, $response] = $this->controller->balance('9999');
+    
+        $this->assertEquals(404, $status);
+        $this->assertIsArray($response);
+        $this->assertArrayHasKey('error', $response);
+        $this->assertEquals('Account not found', $response['error']);
+    }
+    
 }

@@ -2,88 +2,113 @@
 
 namespace App\Services;
 
-use App\Models\Account;
-use Exception;
-
 class AccountService
 {
-    private $accounts = [];
+    private $dataFile = 'accounts.json';
+
+    public function __construct()
+    {
+        if (!file_exists($this->dataFile)) {
+            file_put_contents($this->dataFile, json_encode([]));
+        }
+    }
+
+    private function loadAccounts()
+    {
+        $accounts = json_decode(file_get_contents($this->dataFile), true);
+        return $accounts ?: [];
+    }
+
+    private function saveAccounts($accounts)
+    {
+        file_put_contents($this->dataFile, json_encode($accounts));
+    }
 
     public function reset()
     {
-        try {
-            $this->accounts = [];
-        } catch (Exception $e) {
-            throw new Exception("Failed to reset accounts: " . $e->getMessage());
-        }
+        $this->saveAccounts([]);
     }
 
-    public function createAccount($id, $initialBalance)
+    public function deposit($accountId, $amount)
     {
-        try {
-            if (!isset($this->accounts[$id])) {
-                $this->accounts[$id] = (object) ['id' => $id, 'balance' => $initialBalance];
-            } else {
-                throw new Exception("Account already exists.");
-            }
-        } catch (Exception $e) {
-            throw new Exception("Failed to create account: " . $e->getMessage());
+        $accounts = $this->loadAccounts();
+        
+        if (!isset($accounts[$accountId])) {
+            $accounts[$accountId] = 0;
         }
+
+        $accounts[$accountId] += $amount;
+
+        $this->saveAccounts($accounts);
+
+        return [
+            'destination' => [
+                'id' => $accountId,
+                'balance' => $accounts[$accountId],
+            ]
+        ];
     }
 
-    public function getBalance($id)
+    public function withdraw($accountId, $amount)
     {
-        try {
-            return isset($this->accounts[$id]) ? $this->accounts[$id]->balance : null;
-        } catch (Exception $e) {
-            throw new Exception("Failed to get balance: " . $e->getMessage());
+        $accounts = $this->loadAccounts();
+
+        if (!isset($accounts[$accountId])) {
+            throw new \Exception(0);
         }
+
+        if ($accounts[$accountId] < $amount) {
+            throw new \Exception('Insufficient funds');
+        }
+
+        $accounts[$accountId] -= $amount;
+
+        $this->saveAccounts($accounts);
+
+        return [
+            'origin' => [
+                'id' => $accountId,
+                'balance' => $accounts[$accountId],
+            ]
+        ];
     }
 
-    public function deposit($id, $amount)
+    public function transfer($fromAccountId, $toAccountId, $amount)
     {
-        try {
-            $isNewAccount = false;
+        $accounts = $this->loadAccounts();
 
-            if (!isset($this->accounts[$id])) {
-                $this->createAccount($id, $amount);
-                $isNewAccount = true;
-            } else {
-                $this->accounts[$id]->balance += $amount;
-            }
-
-            $currentBalance = $this->accounts[$id]->balance;
-
-            return $isNewAccount ? 201 : json_encode(['status' => 200, 'balance' => $currentBalance]);
-        } catch (Exception $e) {
-            throw new Exception("Failed to deposit: " . $e->getMessage());
+        if (!isset($accounts[$fromAccountId])) {
+            throw new \Exception(0);
         }
+
+        if (!isset($accounts[$toAccountId])) {
+            $accounts[$toAccountId] = 0;
+        }
+
+        if ($accounts[$fromAccountId] < $amount) {
+            throw new \Exception('Insufficient funds in origin account');
+        }
+
+        $accounts[$fromAccountId] -= $amount;
+        $accounts[$toAccountId] += $amount;
+
+        $this->saveAccounts($accounts);
+
+        return [
+            'origin' => [
+                'id' => $fromAccountId,
+                'balance' => $accounts[$fromAccountId],
+            ],
+            'destination' => [
+                'id' => $toAccountId,
+                'balance' => $accounts[$toAccountId],
+            ]
+        ];
     }
 
-    public function withdraw($id, $amount)
+    public function getBalance($accountId)
     {
-        try {
-            if (!isset($this->accounts[$id]) || $this->accounts[$id]->balance < $amount) {
-                return false;
-            }
-            $this->accounts[$id]->balance -= $amount;
-            return true;
-        } catch (Exception $e) {
-            throw new Exception("Failed to withdraw: " . $e->getMessage());
-        }
-    }
-
-    public function transfer($fromId, $toId, $amount)
-    {
-        try {
-            if (!isset($this->accounts[$fromId]) || !isset($this->accounts[$toId]) || $this->accounts[$fromId]->balance < $amount) {
-                return false;
-            }
-            $this->accounts[$fromId]->balance -= $amount;
-            $this->accounts[$toId]->balance += $amount;
-            return true;
-        } catch (Exception $e) {
-            throw new Exception("Failed to transfer: " . $e->getMessage());
-        }
+        $accounts = $this->loadAccounts();
+        return $accounts[$accountId] ?? null;
     }
 }
