@@ -18,7 +18,7 @@ class EventController
     {
         try {
             $this->service->reset();
-            echo json_encode(['message' => 'State reset']);
+            echo 'OK';
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
@@ -31,7 +31,7 @@ class EventController
             $balance = $this->service->getBalance($id);
             if ($balance === null) {
                 http_response_code(404);
-                echo json_encode(['error' => 'Account not found']);
+                echo 0;
             } else {
                 echo json_encode(['balance' => $balance]);
             }
@@ -46,30 +46,33 @@ class EventController
         try {
             $response = match ($data['type']) {
                 'deposit' => function() use ($data) {
-                    $this->service->deposit($data['destination'], $data['amount']);
+                    $status = $this->service->deposit($data['destination'], $data['amount']);
+                    http_response_code($status);  // Define o código de status HTTP (201 para nova conta, 200 para depósito em conta existente)
                     return json_encode(['destination' => ['id' => $data['destination'], 'balance' => $this->service->getBalance($data['destination'])]]);
                 },
                 'withdraw' => function() use ($data) {
                     if ($this->service->withdraw($data['origin'], $data['amount'])) {
+                        http_response_code(200); // OK
                         return json_encode(['origin' => ['id' => $data['origin'], 'balance' => $this->service->getBalance($data['origin'])]]);
                     } else {
-                        http_response_code(404);
+                        http_response_code(404); // Not Found
                         return json_encode(['error' => 'Account not found or insufficient funds']);
                     }
                 },
                 'transfer' => function() use ($data) {
                     if ($this->service->transfer($data['origin'], $data['destination'], $data['amount'])) {
+                        http_response_code(200); // OK
                         return json_encode([
                             'origin' => ['id' => $data['origin'], 'balance' => $this->service->getBalance($data['origin'])],
                             'destination' => ['id' => $data['destination'], 'balance' => $this->service->getBalance($data['destination'])],
                         ]);
                     } else {
-                        http_response_code(404);
+                        http_response_code(404); // Not Found
                         return json_encode(['error' => 'Transfer failed']);
                     }
                 },
                 default => function() {
-                    http_response_code(400);
+                    http_response_code(400); // Bad Request
                     return json_encode(['error' => 'Invalid event type']);
                 }
             };

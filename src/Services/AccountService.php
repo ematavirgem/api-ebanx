@@ -18,10 +18,14 @@ class AccountService
         }
     }
 
-    public function createAccount($id, $balance = 0)
+    public function createAccount($id, $initialBalance)
     {
         try {
-            $this->accounts[$id] = new Account($id, $balance);
+            if (!isset($this->accounts[$id])) {
+                $this->accounts[$id] = (object) ['id' => $id, 'balance' => $initialBalance];
+            } else {
+                throw new Exception("Account already exists.");
+            }
         } catch (Exception $e) {
             throw new Exception("Failed to create account: " . $e->getMessage());
         }
@@ -39,11 +43,18 @@ class AccountService
     public function deposit($id, $amount)
     {
         try {
+            $isNewAccount = false;
+
             if (!isset($this->accounts[$id])) {
-                return false;
+                $this->createAccount($id, $amount);
+                $isNewAccount = true;
+            } else {
+                $this->accounts[$id]->balance += $amount;
             }
-            $this->accounts[$id]->balance += $amount;
-            return true;
+
+            $currentBalance = $this->accounts[$id]->balance;
+
+            return $isNewAccount ? 201 : json_encode(['status' => 200, 'balance' => $currentBalance]);
         } catch (Exception $e) {
             throw new Exception("Failed to deposit: " . $e->getMessage());
         }
