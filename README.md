@@ -1,4 +1,4 @@
-# API Project
+# API EBANX
 
 Este projeto é uma API simples desenvolvida em PHP puro. Abaixo você encontrará instruções para configurar o ambiente, instalar dependências, e rodar os testes.
 
