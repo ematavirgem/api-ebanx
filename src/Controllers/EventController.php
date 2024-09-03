@@ -56,7 +56,7 @@ class EventController
                         return json_encode(['origin' => ['id' => $data['origin'], 'balance' => $this->service->getBalance($data['origin'])]]);
                     } else {
                         http_response_code(404); // Not Found
-                        return json_encode(['error' => 'Account not found or insufficient funds']);
+                        return 0;
                     }
                 },
                 'transfer' => function() use ($data) {
@@ -68,7 +68,7 @@ class EventController
                         ]);
                     } else {
                         http_response_code(404); // Not Found
-                        return json_encode(['error' => 'Transfer failed']);
+                        return 0;
                     }
                 },
                 default => function() {
