@@ -23,14 +23,14 @@ class EventController
     public function event($data)
     {
         try {
-            [$status, $response] = match ($data['type']) {
+            [$status, $response, $json] = match ($data['type']) {
                 'deposit' => [201, $this->accountService->deposit($data['destination'], $data['amount']), true],
                 'withdraw' => [201, $this->accountService->withdraw($data['origin'], $data['amount']), true],
                 'transfer' => [201, $this->accountService->transfer($data['origin'], $data['destination'], $data['amount']), true],
                 default => [400, ['error' => 'Invalid event type'], true],
             };
 
-            return [$status, $response, true];
+            return [$status, $response, $json];
         } catch (Exception $e) {
             return [404, $e->getMessage(), false];
         }
