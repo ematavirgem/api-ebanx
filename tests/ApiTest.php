@@ -60,9 +60,6 @@ class ApiTest extends TestCase
         ]);
 
         $this->assertEquals(404, $status);
-        //$this->assertIsArray($response);
-        //$this->assertArrayHasKey('error', $response);
-        //$this->assertEquals('Account not found', $response['error']);
     }
 
     public function testTransferBetweenAccounts()
@@ -99,9 +96,6 @@ class ApiTest extends TestCase
         [$status, $response] = $this->controller->balance('1000');
 
         $this->assertEquals(200, $status);
-        //$this->assertIsArray($response);
-        //$this->assertArrayHasKey('balance', $response);
-        //$this->assertEquals(500, $response['balance']);
     }
 
     public function testGetBalanceForNonExistentAccount()
@@ -109,9 +103,6 @@ class ApiTest extends TestCase
         [$status, $response] = $this->controller->balance('9999');
     
         $this->assertEquals(404, $status);
-        //$this->assertIsArray($response);
-        //$this->assertArrayHasKey('error', $response);
-        //$this->assertEquals('Account not found', $response['error']);
     }
     
 }
